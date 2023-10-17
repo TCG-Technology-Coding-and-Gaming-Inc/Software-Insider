@@ -2,7 +2,7 @@
 
 ## This is the Creative Commons (CC) BY-NC 4.0.
 
-TL:DR this allows you to remix, copy and improve the code so long you mention me and don't use it commercially
+TL:DR this allows you to remix, copy and improve the code so long you mention TCG Techonology - Coding - Gaming Inc. and don't use it commercially
 
 ## Real License
 
