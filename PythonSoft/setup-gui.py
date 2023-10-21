@@ -15,7 +15,7 @@ def cdrom():
     partitions = psutil.disk_partitions(all=True)
     for partition in partitions:
         if 'cdrom' in partition.opts:
-            return True
+            return partition.device
     return False
 def clear():
     if os.name == 'nt':
@@ -32,7 +32,7 @@ def boot(bootdevice):
     time.sleep(0.5)
     print("Detecting IDE-0...HGST IC25N030ATCS04-0 30GB")
     print("Detecting IDE-1...",end="\r")
-    if cdrom() == True:
+    if cdrom() != None:
         time.sleep(0.31)
         print("Detecting IDE-1...Logitec LDR-E4242AK")
     else:
@@ -64,7 +64,7 @@ def setupstart():
         print("Initializing CD-ROM, please wait...",end="\r")
         fdcd = False
         res = cdrom()
-        if res == True:
+        if res != None:
             time.sleep(3)
             fdcd = True
             print("Initializing CD-ROM, please wait...Done!")
@@ -91,7 +91,7 @@ def setupstart():
         print("PCI Bus scan complete.                                     ")  
         print("Loading additional VIDEO and MOUSE Drivers. This may take up to a couple of minutes...")
         time.sleep(9)
-        if sch == 1 and res == True:
+        if sch == 1 and res == type(str):
             oemsetup()
 def oemsetup():
     global oemsetupdetectharddriveformattedornot
@@ -139,21 +139,36 @@ def copyfiles(directory):
     confirm = messagebox.askyesno("Windows 98 Setup - Caution Notice","You are about to irreversibly change your computer. If you have important files on your hard drive, press NO and back them up. Otherwise press YES",icon=messagebox.WARNING)
     if confirm == True:
             def update_progress(i):
+                possiblechoices = ["blue","aqua","#016699","#30d5c8","#aa6dcc"]
+                windows.configure(bg=random.choice(possiblechoices))
+                
                 prgval.set(i)
                 if i < 100:
                     windows.after(5000, update_progress, i + 1)
             prgval = IntVar()
-            print(1)
             copyyay = Label(windows,text="Copying files. This will be slower if you have a low-end computer",bg="#016699")
-            print(2)
             copyyay.place(x=220,y=510)
-            print(3)
             prgbar = Progressbar(variable=prgval,length=450)
-            print(4)
             prgbar.place(x=185,y=530)
-            print(5)
-            prgbar["maximum"] = 100
-            update_progress(0)
+            ts = Text(windows,height=20,width=92)
+            ts.place(x=27,y=92)
+            try:
+                os.mkdir(directory)
+            except FileExistsError:
+                pass
+            try:
+                h = cdrom()
+                firstcmd = h[0:2] + os.sep + "UNPACK"
+                print(firstcmd)
+                lastcmd = "xcopy *.* " + directory + "/E /I /Q"
+                os.chdir(firstcmd)
+                os.system(lastcmd)
+                a = os.listdir(firstcmd)
+                prgbar["maximum"] = 100
+                update_progress(0)
+            except FileNotFoundError:
+                x = messagebox.askretrycancel("Windows 98 Setup - Okmeque1 Computers","Please insert the correct CD-ROM and press RETRY or press CANCEL to download the image file.",icon=messagebox.ERROR)
+                
 
 def setupclean():
     global windows
@@ -161,13 +176,15 @@ def setupclean():
         wi.destroy()
     l3 = Label(windows,text="Windows must select a directory to install to. You can choose \Win or other as you wish. To select, press the according button.",bg="#016699")
     l3.pack()
-    b4 = Button(windows,text="I want to use the \Win directory.",command=lambda: copyfiles(""),bg="aqua")
+    b4 = Button(windows,text="I want to use the \Win directory.",command=lambda: copyfiles("C:\WIN"),bg="aqua")
     b4.pack()
     b5 = Button(windows,text="I want to use another directory.",bg="#30D5C8")
     b5.pack()
 def realsetup():
     global oemsetupdetectharddriveformattedornot
     global windows
+    if os.name != "nt":
+        x = messagebox.showerror("Windows 98 Setup - Recovery","Your computer is not compatible and/or does not meet the minimum system requirements. Change your hardware and try again. If you have an anti-virus on your computer, you may want to disable it before running SETUP")
     windows = Tk()
     windows.title("Windows 98 Setup - Okmeque1 Computer OEM Recovery disc")
     windows.geometry("800x680")
