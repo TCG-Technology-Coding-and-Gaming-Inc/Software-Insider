@@ -5,7 +5,7 @@
 
 
                                                 """
-
+from getpass import *
 import os
 import time
 import tkinter as tk
@@ -17,10 +17,21 @@ import psutil
 import random
 from tkinter import font
 from tkinter import simpledialog
+#import sound
 global oemsetupdetectharddriveformattedornot
 oemsetupdetectharddriveformattedornot = False
 global hdpart
 hdpart = {"partition":True}
+global syskey
+syskey = ''
+global _stbootdevice
+_stbootdevice = {"CDROM":1,"HDD0":2,"FDD0":3}
+global biosver
+biosver = "BIOS Version 2.7.18"
+global update
+update = 0
+global bootpwd
+bootpwd = ""
 def cdrom():
     partitions = psutil.disk_partitions(all=True)
     for partition in partitions:
@@ -33,13 +44,126 @@ def clear():
     else:
         os.system("clear")
     return
+def sysrom():
+    while True:
+        global biosver
+        global _stbootdevice
+        global update
+        if update == 0 and biosver != "BIOS Version 2.7.18":
+            clear()
+            print("")
+        clear()
+        print(biosver + " - © Okmeque1 Corporation 1981-2079")
+        print("A newer BIOS is available - Version 2.7.30 - Use TFLASH to flash software BIOS" if biosver == 'BIOS Version 2.7.18' else "")
+        print("[1] -> View system configuration")
+        print("[2] -> Change general information")
+        print("[3] -> Change BOOT order for default booting")
+        print("[4] -> PCI PnP Configuration")
+        print("[5] -> Onboard devices")
+        biosinput = int(input("Enter choice : "))
+        if biosinput == 1:
+            clear()
+            print("Time : " + time.asctime())
+            print("None of these fields can be changed.")
+            print("intel Pentium III - 1.00GhZ - Runnning at 999MhZ")
+            print("FSB : 132MhZ ")
+            print("RAM : 327680MB - 327673MB Usable")
+            print("IDE-0 : HGST IC25N030ATCS04-0 30GB")
+            print("IDE-1 : Logitec LDR-E4242AK DVD+-RW" if cdrom() != False else "IDE-1 : Not installed")
+            print("Okmeque1 Computers Industrial Motherboard - iPGA370 - intel 815 chipset")
+            input("                 CARD SLOTS - Press ENTER to view")
+            clear()
+            print("================================================")
+            print("AGP 1 : TORICA nVidia GeForce MX440 (GeForce 4 MX440)64MB DDR VGA")
+            print("PCI/E 2 : None")
+            print("PCI/E 3 : None")
+            print("PCI/I 4 : None")
+            print("PCI/I 5 : Sound BLASTER! 16")
+            print("PCI/I 6 : None")
+            print("ISA/A 7 : None")
+            print("Note that most SDESK 300VS Models come with 6 physical slots which means that PCI/I 6 and ISA/A 7 can NOT be used at the same time. Current SDESK 300VS has 7 physical slots.")
+            print("Only 7 of those can be used with physical cards. The others are connected via a chipset bridge or are allocated to PCI lanes. PCI/E devices are connected to the chipset bridge while standard devices are connected using PCI/I. Legacy devices can be activated and will run in ISA/A Mode")
+            input("                 Onboard devices - Press ENTER to view")
+            clear()
+            print("USB Controller(USB 2.0) : Enabled - Running in FAST mode - PCI/I USB CONTROLLER")
+            print("Onboard Ethernet(10/100T) : Enabled - Connected to NETWORK 1 network with 100UP/DOWN - PCI/I ETHERNET CONTROLLER")
+            print("VGA Controller : Disabled : Video card detected in AGP 1")
+            print("Serial/Parralel : Enabled - Using Legacy ISA Bridge")
+            print("Integrated sound : Disabled : Sound BLASTER! in PCI/I 5")
+            print("Keyboard (Port i8042) : Connected to CPU.")
+            input("                 BOOT Order - Press ENTER to view")
+            print(_stbootdevice)
+            print("3 devices that are detected will be presented. The device is at the left while the order is at the right.")
+            input("Press ENTER to return to the main menu.")
+        elif biosinput == 2:
+            clear()
+            print("Change :")
+            print("[1] : Date/Time")
+            print("[2] : BOOT password")
+            print("[3] : AT (Legacy Mode)")
+            chbi1 = int(input("Enter choice : "))
+            if chbi1 == 1:
+                os.system("date")
+                os.system("time")
+            elif chbi1 == 2:
+                global bootpwd
+                trypwd = True
+                while trypwd is True:
+                    testpwd = getpass("Enter new password : ")
+                    confpwd = getpass("Re-Enter password : ")
+                    confirm = input("Entering a password can be a safe way to lock your computer. However, there is no such option to reset it: it is stored in NVRAM which you CANNOT reset without sending it to Okmeque1 Computers ($30 fee). To continue, enter 'Y'.")
+                    if (testpwd == confpwd) and confirm == "Y":
+                        bootpwd = confpwd
+                        input("Password changed. Press ENTER to return to the main menu")
+                        trypwd = False
+                    elif (testpwd == confpwd) and confirm != "Y":
+                        input("Action stopped. Press ENTER to return to main menu...")
+                        trypwd = False
+                    else:
+                        print("Passwords do not match. Try again.")
+        elif biosinput == 6:
+            boot("1STBOOTDEVICE")
+def fdboot():
+    clear()
+    a = input("Reboot and store Windows 98 Key in system?[Y/N]")
+    a = a.upper()
+    if a == 'Y':
+        return 'ZF3R0-FHED2-M80TY-8QYGC-NPKYF'
+    else:
+        return 'INVAL-IDPRO-DUCTK-EYSPE-CIFIE'
 def boot(bootdevice):
     clear()
+    for x in range(55):
+         print("_",end='\r')
+         time.sleep(0.13)
+         print(" ",end='\r')
+         time.sleep(0.13)
+    clear()
+    time.sleep(2)
+    print("nVIDIA GeForce MX440-SE VGA BIOS")
+    print("Version 4.17.00.59.27")
+    print("Copyright © nVidia Corp 1996-2002")
+    print("64MB RAM.")
+    time.sleep(3)
+    clear()
     if bootdevice == "HDD0":
-        windows.withdraw()
-    print("BIOS Version 2.7.18 - © Okmeque1 Corporation 1981-2079")
+        windows.withdraw()  
+    global biosver
+    global update
+    global bootpwd
+    fail = 3
+    if bootpwd != "":
+        while fail != 0:
+            enterpwd = getpass()
+            if enterpwd == bootpwd:
+                break
+            else:
+                fail -= 1
+    if fail == 0:
+        exit()
+    print(biosver + " - © Okmeque1 Corporation 1981-2079")
     print("Model No : SDESK 300VS")
-    print("64144KB OK")
+    print("327680KB OK")
     print("CPU : intel Pentium(R) III 1.00 GhZ")
     print("Detecting IDE-0...",end="\r")
     time.sleep(0.5)
@@ -52,11 +176,13 @@ def boot(bootdevice):
         time.sleep(5)
         print("Detecting IDE-1...Not found.")
     print("Initializing devices...Done")
+    if biosver != "BIOS Version 2.7.18" and update != 1:
+        print("Errors during startup : CMOS Checksum BAD - Please run SETUP ROM.")
     bios = input("Press any key then ENTER to enter BIOS or B for BOOT Menu, else press enter")
     if bios == "B" or bios == "b":
         clear()
         print("Okmeque1 Computers Inc - © Okmeque1 Corporation 1981-2079")
-        print("BOOT MENU")
+        print("                     BOOT MENU")
         print("=========================================================")
         print("[1] -> Legacy diskette A: WINVERIFY")
         print("[2] -> Legacy diskette B: (unknown)")
@@ -68,8 +194,12 @@ def boot(bootdevice):
         print("[5] -> ROM BIOS")
         boots = int(input("Please choose an option : "))
         if boots == 1:
+            print("Rebooting to Legacy diskette A:...")
+            time.sleep(3)
             boot("FDD0")
         elif boots == 2:
+            print("Rebooting to Legacy diskette B:...")
+            time.sleep(3)
             print("Searching for boot record on Legacy diskette B:...",end='\r')
             time.sleep(10)
             print("Searching for boot record on Legacy diskette B:...Not found.",end='\r')
@@ -77,16 +207,40 @@ def boot(bootdevice):
             print("Insert system disk in A:")
             input("Press ENTER when ready")
             boot("FDD0")
+        elif boots == 3:
+            print("Rebooting to IDE-0 HGST IC25N030ATCS04-0 30GB...")
+            time.sleep(3)
+            boot("IDE-0")
+        elif boots == 4:
+            print("Rebooting to IDE-1...Logitec LDR-E4242AK" if cdrom() != False else "Rebooting to IDE-1...")
+            time.sleep(3)
+            boot("CDROM")
+        elif boots == 5:
+            sysrom()
     if bootdevice == "CDROM":
         nevermind()
+    elif bootdevice == "FDD0":
+        global syskey
+        a = fdboot()
+        syskey = a
+        print("Keys updated. Rebooting NOW...")
+        time.sleep(3)
+        boot("1STBOOTDEVICE")
     elif bootdevice == "DEBUG":
         realsetup()
     elif bootdevice == "Hackintosh HD":
         wininit()
     elif bootdevice == "HDD0" or bootdevice == "IDE-0":
-        hdboot()
+        wininit()
+    elif bootdevice == "1STBOOTDEVICE":
+        global _stbootdevice
+        for x in _stbootdevice:
+            if _stbootdevice[x] == 1:
+                boot(x)
+        
 def dosnocdrom():
     while True:
+        global biosver
         prompt = input("A:>")
         prompt = prompt.lower()
         if prompt == "dir":
@@ -101,10 +255,12 @@ def dosnocdrom():
             print("FINDCD   EXE  8009")
             print("SCSICD   SYS 33612")
             print("JO       SYS  2048")
-            print("9 File(s) 250101 Bytes")
-            print("         1226507B Free")
+            print("FLASH2   EXE  2246")
+            print("FLASH2   ROM 33612")
+            print("9 File(s) 285959 Bytes")
+            print("         1188601B Free")
             print("Disk is write protected.")
-        elif "autoexec" in prompt:
+        elif prompt == "autoexec" or prompt == "autoexec.bat":
             print("Okmeque1 Computers ™ - IDE CD-ROM Drivers")
             print("Initializing CD-ROM, please wait...",end="\r")
             fdcd = False
@@ -144,11 +300,11 @@ def dosnocdrom():
         elif prompt == "extract" or prompt == "extract.exe":
             print("Microsoft Extraction Utility V1.00")
             print("Cabinet name not specified.")
-            print("/E - Extract from cabinet - Usage - extract.exe /E C:\DIR")
-            print("/C - Compress to cabinet ")
+            print("/E - Extract from cabinet - Usage - extract.exe /E C:\EXTRACTDIR")
+            print("/C - Compress to cabinet - Usage - extract.exe /C C:\INDIR C:\CABINET.CAB ")
             print("No cabinets on A: - Program disabled.")
         elif "findcd" in prompt or "findcd.exe" in prompt:
-            pass
+            print("\n")
         elif prompt == 'fdisk' or prompt == 'fdisk.exe':
             trueagain = True
             clear()
@@ -207,6 +363,25 @@ def dosnocdrom():
                         print("\n\n\nNo partitions defined\nNo partitions to make active")
                         input("Press ENTER to continue")
                         clear()
+        elif prompt == "flash2" or prompt == "flash2.exe":
+            print("Okmeque1 Computers - Flashing Utility")
+            print("Error - No file specified")
+            print("Usage:")
+            print("FLASH2.EXE /U *.ROM")
+            print("Use the CORRECT *.ROM for your system. If you use an incorrect one, your computer may stop working.")
+            print("FLASH2.EXE will look for a file named FLASH2.ROM. If present, you can do 'FLASH2.EXE /U'")
+        elif prompt == "flash2.exe /u" or prompt == "flash2.exe /u flash2.rom" or prompt == "flash2.exe /u a:\flash2.rom":
+            a = input("Flashing is IRREVERSIBLE and if a POWER LOSS occurs, your computer will NO longer function! Proceed?[Y/N]")
+            if a == "Y":
+                print("Flashing, please wait. DO NOT UNPLUG OR TURN OFF YOUR COMPUTER. IF THE PROCESS FAILS, YOUR COMPUTER WILL NO LONGER FUNCTION!!!!!!!")
+                time.sleep(14)
+                global biosver
+                biosver = "BIOS Version 2.7.30"
+                print("Done. Rebooting NOW...")
+                time.sleep(3)
+                boot("1STBOOTDEVICE")
+            else:
+                print("Aborted.")
 def wininit():
     global windows
     windows = Tk()
@@ -221,14 +396,14 @@ def hdboot():
         input("Invalid system disk\nReplace the disk and strike enter key when ready.")
         boot("CDROM")
     windows.deiconify()
-    badchar = "¬!£$%^&*(){@}~#'[]\|,./<>?"
+    badchars = "¬!£$%^&*(){@}~#'[]\|,./<>?"
     askpcname = simpledialog.askstring("Setup","Enter a valid computer name(Only characters and digits as well as '-','_','=','+' are allowed)")
     if askpcname == None:
         hdboot()
     chars = "1234567890QqWwEeRrTtYyUuIiOoPpAaSsDdFfGgHhJjKkLlZzXxCcVvBbNnMm-=_+"
     for char in askpcname:
-        for badchars in badchar:
-            if badchars == char:
+        for badchar in badchars:
+            if badchar == char:
                 x = messagebox.showerror("Windows Setup Message SU530C","Your computer name has an invalid character. Please try again.")
                 hdboot()
     username = simpledialog.askstring("Setup","Enter a username : ")
@@ -248,10 +423,16 @@ def hdboot():
         boot("CDROM")
     while True:
         winkey = "ZF3R0-FHED2-M80TY-8QYGC-NPKYF"
-        askkey = simpledialog.askstring("Setup","Enter your Windows Product Key. It is a 25 character long code located at the back of the CD-ROM case or on a special boot floppy disk. The format must be 'XXXXX-XXXXX-XXXXX-XXXXX-XXXXX'.")
+        askkey = simpledialog.askstring("Setup","Enter your Windows Product Key. It is a 25 character long code located at the back of the CD-ROM case or on a special boot floppy disk. The system may also store a key. To access it, press Cancel. The format must be 'XXXXX-XXXXX-XXXXX-XXXXX-XXXXX'.")
         askkey = askkey.upper()
         if askkey == winkey:
             break
+        elif askkey == None:
+            global syskey
+            if syskey == winkey:
+                break
+            else:
+                x = messagebox.showerror("Setup","The Product Key stored in the system is not valid.")
         else:
             x = messagebox.showerror("Setup","The Product Key you entered is not valid.")
 
@@ -359,9 +540,8 @@ def oemsetup():
                     input("Setup needs to restart your computer for all partitioning changes to be visible to the computer. Whenever you're ready, press ENTER")
                     clear()
                     boot("CDROM")
-
 def restart():
-    l1 = Label(windows,text="SETUP has just copied the files to your computer. In order for the computer to see them, we must restart.\n Whenever you're ready, press RESTART or wait until the progressbar reaches the end.",bg="#016699")
+    l1 = Label(windows,text="Setup will restart to continue shortly. To restart now, press Restart Now.",bg="#016699")
     l1.pack()
     b1 = Button(windows,text="Restart Now",command=lambda: boot("HDD0"),bg="aqua")
     b1.pack()
@@ -479,27 +659,31 @@ def realsetup():
     if os.name != "nt":
         x = messagebox.showerror("Windows 98 Setup - Recovery","Your computer is not compatible and/or does not meet the minimum system requirements. Change your hardware and try again. If you have an anti-virus on your computer, you may want to disable it before running SETUP")
     while True:
-        os.chdir(cdrom())
-        if os.path.exists("UNPACK") == False:
-            wrongcddetect = messagebox.askyesno("Windows 98 Setup","SETUP has detected that you have the wrong CD-ROM in the drive. To continue with the existing drive, please insert the CORRECT CD in the drive and press YES or press NO to install from another location",icon=messagebox.INFO)
-            if wrongcddetect == True:
-                pass
-            else:
-                try:
-                    otherloc = filedialog.askdirectory()
-                    os.chdir(otherloc)
-                    if os.path.exists("UNPACK") == False:
+        try:
+            os.chdir(cdrom())
+            if os.path.exists("UNPACK") == False:
+                wrongcddetect = messagebox.askyesno("Windows 98 Setup","SETUP has detected that you have the wrong CD-ROM in the drive. To continue with the existing drive, please insert the CORRECT CD in the drive and press YES or press NO to install from another location",icon=messagebox.INFO)
+                if wrongcddetect == True:
+                    pass
+                else:
+                    try:
+                        otherloc = filedialog.askdirectory()
+                        os.chdir(otherloc)
+                        if os.path.exists("UNPACK") == False:
+                            pass
+                        break
+                    except OSError:
+                        x = messagebox.showerror("Windows 98 Setup","The folder that you have selected is not readable, is invalid or is corrupted. Please choose another folder.")
                         pass
-                    break
-                except OSError:
-                    x = messagebox.showerror("Windows 98 Setup","The folder that you have selected is not readable, is invalid or is corrupted. Please choose another folder.")
-                    pass
-                except BaseException:
-                    x = messagebox.showerror("Windows 98 Setup","An error has occured. Please try again")
-                    pass
-        else:
-            otherloc = cdrom()
-            break
+                    except BaseException:
+                        x = messagebox.showerror("Windows 98 Setup","An error has occured. Please try again")
+                        pass
+            else:
+                otherloc = cdrom()
+                break
+        except BaseException:
+            x = messagebox.showerror("Please insert the correct CD-ROM in the CD-ROM drive. If you do not have access to it, please acquire it before running SETUP.")
+            pass
     windows.deiconify()
     ft = font.Font(family="Consolas",size=3)
     l1 = Label(windows,text="Windows 98 Setup - Recovery",bg="#016699")
@@ -513,4 +697,4 @@ def realsetup():
     b3 = Button(windows,text="Quit setup.",command=exit)
     b3.pack()
     windows.mainloop()
-boot("Hackintosh HD")
+boot("1STBOOTDEVICE")
