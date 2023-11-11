@@ -121,6 +121,10 @@ def sysrom():
                         trypwd = False
                     else:
                         print("Passwords do not match. Try again.")
+            elif chbi1 == 3:
+                print("AT mode is not enabled and cannot be changed by software. Please read the user manual for information on setting the AT mode jumper. AT mode will disable all but legacy devices(even IDE CD-ROM nad hard drives)")
+        elif biosinput == 3:
+            _stbootdevice["CDROM"] = int(input("Enter 1,2,3 for BOOT order : "))
         elif biosinput == 6:
             boot("1STBOOTDEVICE")
 def fdboot():
